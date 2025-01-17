@@ -19,7 +19,7 @@
 #include "stub_sai.h"
 
 service_method_table_t g_services;
-bool                   g_initialized = false;
+bool g_initialized = false;
 
 /*
  * Routine Description:
@@ -33,15 +33,17 @@ bool                   g_initialized = false;
  *    SAI_STATUS_SUCCESS on success
  *    Failure status code on error
  */
-sai_status_t sai_api_initialize(_In_ uint64_t flags, _In_ const service_method_table_t* services)
+sai_status_t sai_api_initialize(_In_ uint64_t flags, _In_ const service_method_table_t *services)
 {
-    if ((NULL == services) || (NULL == services->profile_get_next_value) || (NULL == services->profile_get_value)) {
+    if ((NULL == services) || (NULL == services->profile_get_next_value) || (NULL == services->profile_get_value))
+    {
         fprintf(stderr, "Invalid services handle passed to SAI API initialize\n");
         return SAI_STATUS_INVALID_PARAMETER;
     }
     memcpy(&g_services, services, sizeof(g_services));
 
-    if (0 != flags) {
+    if (0 != flags)
+    {
         fprintf(stderr, "Invalid flags passed to SAI API initialize\n");
 
         return SAI_STATUS_INVALID_PARAMETER;
@@ -66,58 +68,61 @@ sai_status_t sai_api_initialize(_In_ uint64_t flags, _In_ const service_method_t
  *    SAI_STATUS_SUCCESS on success
  *    Failure status code on error
  */
-sai_status_t sai_api_query(_In_ sai_api_t sai_api_id, _Out_ void** api_method_table)
+sai_status_t sai_api_query(_In_ sai_api_t sai_api_id, _Out_ void **api_method_table)
 {
-    if (NULL == api_method_table) {
+    if (NULL == api_method_table)
+    {
         fprintf(stderr, "NULL method table passed to SAI API initialize\n");
 
         return SAI_STATUS_INVALID_PARAMETER;
     }
-    if (!g_initialized) {
+    if (!g_initialized)
+    {
         fprintf(stderr, "SAI API not initialized before calling API query\n");
 
         return SAI_STATUS_UNINITIALIZED;
     }
 
-    switch (sai_api_id) {
+    switch (sai_api_id)
+    {
     case SAI_API_SWITCH:
-        *(const sai_switch_api_t**)api_method_table = &switch_api;
+        *(const sai_switch_api_t **)api_method_table = &switch_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_PORT:
-        *(const sai_port_api_t**)api_method_table = &port_api;
+        *(const sai_port_api_t **)api_method_table = &port_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_FDB:
-        *(const sai_fdb_api_t**)api_method_table = &fdb_api;
+        *(const sai_fdb_api_t **)api_method_table = &fdb_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_VLAN:
-        *(const sai_vlan_api_t**)api_method_table = &vlan_api;
+        *(const sai_vlan_api_t **)api_method_table = &vlan_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_VIRTUAL_ROUTER:
-        *(const sai_virtual_router_api_t**)api_method_table = &router_api;
+        *(const sai_virtual_router_api_t **)api_method_table = &router_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_ROUTE:
-        *(const sai_route_api_t**)api_method_table = &route_api;
+        *(const sai_route_api_t **)api_method_table = &route_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_NEXT_HOP:
-        *(const sai_next_hop_api_t**)api_method_table = &next_hop_api;
+        *(const sai_next_hop_api_t **)api_method_table = &next_hop_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_NEXT_HOP_GROUP:
-        *(const sai_next_hop_group_api_t**)api_method_table = &next_hop_group_api;
+        *(const sai_next_hop_group_api_t **)api_method_table = &next_hop_group_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_ROUTER_INTERFACE:
-        *(const sai_router_interface_api_t**)api_method_table = &router_interface_api;
+        *(const sai_router_interface_api_t **)api_method_table = &router_interface_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_NEIGHBOR:
-        *(const sai_neighbor_api_t**)api_method_table = &neighbor_api;
+        *(const sai_neighbor_api_t **)api_method_table = &neighbor_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_QOS_MAPS:
@@ -129,7 +134,7 @@ sai_status_t sai_api_query(_In_ sai_api_t sai_api_id, _Out_ void** api_method_ta
         return SAI_STATUS_NOT_IMPLEMENTED;
 
     case SAI_API_HOST_INTERFACE:
-        *(const sai_hostif_api_t**)api_method_table = &host_interface_api;
+        *(const sai_hostif_api_t **)api_method_table = &host_interface_api;
         return SAI_STATUS_SUCCESS;
 
     case SAI_API_MIRROR:
@@ -146,7 +151,8 @@ sai_status_t sai_api_query(_In_ sai_api_t sai_api_id, _Out_ void** api_method_ta
 
     case SAI_API_LAG:
         /* TODO : implement */
-        return SAI_STATUS_NOT_IMPLEMENTED;
+        *(const sai_lag_api_t **)api_method_table = &lag_api;
+        return SAI_STATUS_SUCCESS;
 
     default:
         fprintf(stderr, "Invalid API type %d\n", sai_api_id);
@@ -188,7 +194,8 @@ sai_status_t sai_api_uninitialize(void)
  */
 sai_status_t sai_log_set(_In_ sai_api_t sai_api_id, _In_ sai_log_level_t log_level)
 {
-    switch (log_level) {
+    switch (log_level)
+    {
     case SAI_LOG_DEBUG:
         break;
 
@@ -212,7 +219,8 @@ sai_status_t sai_log_set(_In_ sai_api_t sai_api_id, _In_ sai_log_level_t log_lev
         return SAI_STATUS_INVALID_PARAMETER;
     }
 
-    switch (sai_api_id) {
+    switch (sai_api_id)
+    {
     case SAI_API_SWITCH:
         break;
 
@@ -285,11 +293,14 @@ sai_status_t sai_log_set(_In_ sai_api_t sai_api_id, _In_ sai_log_level_t log_lev
  */
 sai_object_type_t sai_object_type_query(_In_ sai_object_id_t sai_object_id)
 {
-    sai_object_type_t type = ((stub_object_id_t*)&sai_object_id)->object_type;
+    sai_object_type_t type = ((stub_object_id_t *)&sai_object_id)->object_type;
 
-    if SAI_TYPE_CHECK_RANGE(type) {
+    if SAI_TYPE_CHECK_RANGE (type)
+    {
         return type;
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Unknown type %d", type);
         return SAI_OBJECT_TYPE_NULL;
     }
